@@ -1,4 +1,4 @@
-import React, { FC, ReactElement, useCallback, useReducer, useRef } from 'react';
+import React, { FC, ReactElement, useCallback, useEffect, useReducer, useRef } from 'react';
 import { MapOptions } from 'ol/PluggableMap';
 
 import { MapContext } from '../context';
@@ -22,7 +22,7 @@ const Map: FC<MapProps> = ({
   ...props
 }): ReactElement => {
   const map = useMap();
-  const mapRef = useRef<HTMLDivElement | null>(null);
+  const mapRef = useRef<HTMLDivElement>(undefined as any);
 
   const [state, dispatch] = useReducer(reducer, initStateFromProps(props));
   const { view, target, listeners } = state;
@@ -55,13 +55,17 @@ const Map: FC<MapProps> = ({
     map,
     target: mapRef,
     onTargetChange: el => dispatch({ type: MAP_ACTIONS.SET_TARGET, payload: { target: el } })
+    // onTargetChange: console.log
   });
+  // useEffect(() => {
+  //   map.setTarget(mapRef.current);
+  // }, [mapRef.current])
 
   useView(map, view);
-  console.log(children)
+
   return (
     <MapContext.Provider value={{ target, view, setView, pushEventListener, removeEventListener }}>
-      <div className={className} ref={mapRef}>
+      <div className={className} ref={mapRef} style={{ width: '100%', height: '100%' }}>
         {children}
       </div>
     </MapContext.Provider>

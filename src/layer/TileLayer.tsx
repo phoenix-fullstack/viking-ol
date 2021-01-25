@@ -4,6 +4,7 @@ import OlTileLayer from 'ol/layer/Tile';
 import { Options } from 'ol/layer/BaseTile';
 
 import { useLayer } from '../hooks';
+import { Vector } from 'ol/src/source';
 
 export type LayerProps = Options & {
   id?: string;

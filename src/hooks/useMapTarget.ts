@@ -13,12 +13,9 @@ export interface IMapTragetOptions {
 export const useMapTarget = ({ map, target, onTargetChange }: IMapTragetOptions) => {
   useEffect(() => {
     const sub = map.on('change:target', e => onTargetChange(e.target.getTargetElement()))
-    map.setTarget(target.current as any);
+    map.setTarget(target.current as HTMLDivElement);
 
     return () => {
-      if (target.current && map.getTargetElement()) {
-        map.getTargetElement().remove();
-      }
       map.un('change:target', (sub as any).listener);
       map.setTarget(undefined);
     }
