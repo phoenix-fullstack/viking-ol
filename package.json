@@ -1,7 +1,7 @@
 {
   "name": "viking-ol",
   "version": "1.0.0",
-  "main": "scr/index.ts",
+  "main": "scr/dist/index.js",
   "scripts": {
     "type-check": "tsc --noEmit",
     "type-check:watch": "npm run type-check -- --watch",
@@ -14,12 +14,15 @@
   "repository": "git@github.com:phoenix-fullstack/viking-ol.git",
   "author": "zhaobaojue <zhaobaojue@gmail.com>",
   "license": "MIT",
+  "peerDependencies": {
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1"
+  },
   "dependencies": {
     "classnames": "^2.2.6",
     "ol": "^6.5.0",
     "ol-wind": "^1.0.0-alpha.10",
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1",
+    "styled-components": "^5.2.1",
     "wind-core": "^1.0.0-alpha.10"
   },
   "devDependencies": {
@@ -33,6 +36,7 @@
     "@types/ol": "^6.4.2",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
+    "@types/styled-components": "^5.1.7",
     "jest": "^26.6.3",
     "react-testing-library": "^8.0.1",
     "rollup": "^2.35.1",

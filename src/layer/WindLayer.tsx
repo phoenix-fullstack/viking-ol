@@ -1,8 +1,14 @@
-import React, { FC, useRef } from 'react';
+import React, { FC, ReactElement, useRef, useState } from 'react';
+import styled, { CSSProperties } from 'styled-components';
 
-import { WindLayer as OLWindLayer, IWindOptions } from 'ol-wind';
+import { WindLayer as OLWindLayer, IWindOptions, Field } from 'ol-wind';
+import { transform } from 'ol/proj';
+import MapBrowserEvent from 'ol/MapBrowserEvent';
 
-import { useLayer } from '../hooks';
+import { useMap, useLayer, useObservable } from '../hooks';
+
+import { getWindSpeed, getWindDirection } from '../util';
+import { getDirection, getSpeed } from '../util/helper';
 
 const defaulColorScale = [
   "rgb(36,104, 180)",
@@ -35,6 +41,11 @@ const params = {
   devicePixelRatio: 1
 };
 
+interface IPosition {
+  top: number;
+  left: number;
+}
+
 const WindLayer: FC<any> = ({
   id,
   visible,
@@ -43,9 +54,11 @@ const WindLayer: FC<any> = ({
   isLoading,
   isError,
   ...props
-}): null => {
+}): ReactElement | null => {
+  const map = useMap();
   const layer = useRef<OLWindLayer>(undefined as any);
-
+  const [description, setDescription] = useState<string>('');
+  const [position, setPosition] = useState<IPosition>();
   useLayer(
     () => {
       layer.current = new OLWindLayer(data, {
@@ -60,9 +73,57 @@ const WindLayer: FC<any> = ({
     },
     { visible },
     [id, data]
-  )
+  );
 
-  return null;
+  useObservable(map, 'pointermove', (event) => {
+    const coordinate = (event as any).coordinate;
+    const [lng, lat] = transform(coordinate, 'EPSG:3857', 'EPSG:4326')
+    const field: Field = layer.current.getData();
+    const gridValue = field.interpolatedValueAt(lng, lat);
+    const { u, v } = gridValue;
+    const direction = getDirection(u, v, 'bearingCCW');
+    const speed = getSpeed(u, v);
+    const speedLevel = getWindSpeed(speed);
+    const windDirection = getWindDirection(direction);
+    const description = `${windDirection}  ${speed.toFixed(1)} m/s (${speedLevel}级)`
+    let [left, top] = (event as any).pixel;
+    top = top - 30;
+    left = left - 150 * 1.1 - 5;
+    if (top < 0) top = 0;
+    if (left < 0) left = 0;
+    setDescription(description);
+    setPosition({ top, left });
+  }, []);
+
+  return showInfo ?
+    <WindWrapper style={{ ...position }}>
+      <p>
+        <span>{description}</span>
+      </p>
+    </WindWrapper>
+    : null;
 };
+
+const WindWrapper = styled.div<CSSProperties>`
+  width: 10rem;
+  background: rgba(131, 131, 131, 0.5);
+  position: absolute;
+  z-index: 100;
+  padding: 0.1rem;
+  color: #fff;
+  line-height: 2rem;
+  border-radius: 0.4rem;  
+  >P {
+    width: 100%;
+    height: 50%;
+    margin: 0;
+    text-align: center;
+  }
+`;
+
+WindLayer.defaultProps = {
+  showInfo: true
+}
+WindLayer.displayName = 'WindLayer';
 
 export default WindLayer;

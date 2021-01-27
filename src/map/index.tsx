@@ -65,7 +65,7 @@ const Map: FC<MapProps> = ({
 
   return (
     <MapContext.Provider value={{ target, view, setView, pushEventListener, removeEventListener }}>
-      <div className={className} ref={mapRef} style={{ width: '100%', height: '100%' }}>
+      <div className={className} ref={mapRef} style={{ width: '100%', height: '100%', position: 'relative' }}>
         {children}
       </div>
     </MapContext.Provider>
