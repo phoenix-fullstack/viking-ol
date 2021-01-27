@@ -1,7 +1,8 @@
 {
   "name": "viking-ol",
-  "version": "1.0.0",
-  "main": "scr/dist/index.js",
+  "version": "1.0.1",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "type-check": "tsc --noEmit",
     "type-check:watch": "npm run type-check -- --watch",
